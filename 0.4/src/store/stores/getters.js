@@ -3,7 +3,7 @@ const Tcourses=(state)=>{
     // console.log(state.courses);
     Object.keys(state.courses).forEach(key=>{
         // console.log(key,value);
-        if(state.courses[key].Day=="Monday"){
+        if(state.courses[key].Day==state.Today){
             // console.log("Detected",key);
             Todaycourses[key]=state.courses[key]
         }
@@ -71,45 +71,42 @@ const getpic=(state)=>{
   }
 }
 const courses=(state)=>{
-  let Todaycourses ={}
-  // console.log(state.courses);
-  Object.keys(state.courses).forEach(key=>{
-    // console.log(key,value);
-    if(state.courses[key].Day=="Monday"){
-      // console.log("Detected",key);
-      Todaycourses[key]=state.courses[key]
-    }
-
-  })
-  // console.log(Todaycourses);
-  // return Todaycourses
   return state.courses
-
 }
 const AllcoursesID=(state)=>{
-    let AllCourses=[]
+ 
+    let AllCoursesID=[]
     Object.keys(state.courses).forEach(key=>{
-        let coursename=key.substring(0,7);
-        console.log(coursename);
-        let coursetype=key.substring(7,10);
-        let fullcoursenametype;
-        if(coursetype=="PS")
-        {
-          fullcoursenametype="Practical Session"
-        }
-        else if(coursetype=="TS")
-        {
-          fullcoursenametype="Tutorial Session"
-        }
-        else if(coursetype=="LS")
-        {
-          fullcoursenametype="Live Session"
-        }
-        let fullname=coursename+" "+fullcoursenametype;
-        console.log(coursetype);
-        AllCourses.push(fullname)
+        // let coursename=key.substring(0,7);
+        // console.log(coursename);
+        // let coursetype=key.substring(7,10);
+        // let fullcoursenametype;
+        // if(coursetype=="PS")
+        // {
+        //   fullcoursenametype="Practical Session"
+        // }
+        // else if(coursetype=="TS")
+        // {
+        //   fullcoursenametype="Tutorial Session"
+        // }
+        // else if(coursetype=="LS")
+        // {
+        //   fullcoursenametype="Live Session"
+        // }
+        // let fullname=coursename+" "+fullcoursenametype;
+        // console.log(coursetype);
+        // AllCoursesID.push(fullname)
+        AllCoursesID.push(key)
     })
-    console.log(AllCourses);
-    return AllCourses
+
+    console.log(AllCoursesID);
+    return AllCoursesID
 }
-export {courses,AllcoursesID,Tcourses,UserAdmin,All_users,IsSuperAdmin,getpic,User,UserID,GetUsername}
+const GetFullname=(state)=>{
+    return state.users.Data.name;
+}
+const SecondSemExam=(state)=>{
+  return state.SemesterExamTime.Second
+}
+
+export {courses,AllcoursesID,Tcourses,UserAdmin,All_users,IsSuperAdmin,getpic,User,UserID,GetUsername,GetFullname,SecondSemExam}

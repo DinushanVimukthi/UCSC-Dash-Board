@@ -13,10 +13,11 @@ export default defineComponent({
     $q.dark.set(true)
   },
   methods:{
-  ...mapActions('stores',['HandleAuthenticationStateChange']),
+  ...mapActions('stores',['HandleAuthenticationStateChange','GetDate']),
   },
   mounted() {
       this.HandleAuthenticationStateChange()
+      this.GetDate()
   }
 })
 </script>

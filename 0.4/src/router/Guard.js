@@ -15,16 +15,17 @@ function IsUser()
 }
 async function IsSuperuser()
 {
+  console.log(fAuth.currentUser);
   if(fAuth.currentUser)
   {
     const getSuperAdmin=await get(ref(fDb,"users/"+fAuth.currentUser.uid+"/SuperAdmin"))
     console.log("Superuser",getSuperAdmin.val())
-    if(getSuperAdmin.val())
-    {
-      return true
-    }else{
-      return false
-    }
+    // if(getSuperAdmin.val())
+    // {
+    //   return true
+    // }else{
+    //   return false
+    // }
   }
   else{
     console.log("Not Logged")

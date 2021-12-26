@@ -161,6 +161,7 @@ function HandleAuthenticationStateChange({ commit, dispatch }) {
   onAuthStateChanged(fAuth, (user) => {
     console.log("Auth");
     if (user) {
+      console.log("changed");
       // console.log(user);
       const getuserref = ref(fDb, "users" + "/" + user.uid);
       // console.log(getuserref);
@@ -179,7 +180,12 @@ function HandleAuthenticationStateChange({ commit, dispatch }) {
               SuperAdmin: snapshot.val().SuperAdmin,
             },
           });
-          this.$router.push({ path: "/dash" });
+          // console.log(this.$router.currentRoute.value.fullPath);
+          // console.log(this.$router);
+          // if(this.$route.fullPath != "/SuperAdmin")
+          // {
+            this.$router.push({ path: "/dash" });
+          // }
         }
       });
     } else {
@@ -252,6 +258,16 @@ function Updatecourses({ commit }, payload) {
   // remove(courseref).then(()=>{
   //   console.log("Removed");
   // })
+  let Dates=new Date();
+  let Datesofmodify=((Dates.getDate()>9?Dates.getDate():"0"+Dates.getDate())+"/"+(Dates.getMonth()+1)+"/"+Dates.getFullYear());
+  let Time=(Dates.getHours()>12?Dates.getHours()-12:(Dates.getHours()==0?"0"+Dates.getHours():Dates.getHours()))+":"+(Dates.getMinutes()>=10?Dates.getMinutes():"0"+Dates.getMinutes())+":"+(Dates.getSeconds()>=10?Dates.getSeconds():"0"+Dates.getSeconds());
+  if(Dates.getHours()>12){
+    Time+=" PM";
+  }
+  else{
+    Time+=" AM";
+  }
+  console.log(Time);
   console.log(payload);
   set(courseref, {
     CourseName: payload.CourseName,
@@ -260,6 +276,10 @@ function Updatecourses({ commit }, payload) {
     StartTime: payload.StartTime,
     EndTime: payload.EndTime,
     link: payload.link,
+    lastmodified: payload.lastmodified,
+    lastmodifiedTime: Time,
+    lastmodifiedDate: Datesofmodify,
+    Recurring:payload.RecurringMeeting
   });
 
   console.log("Successfully Updated");
@@ -336,6 +356,35 @@ const ChangeProfilePicture=async ({},payload)=>{
   const userref = ref(fDb, "users/"+fAuth.currentUser.uid+"/Url");
   set(userref,newUrl)
 }
+const GetDate=async ({commit})=>{
+  console.log("Dates");
+  const Dateof=new Date();
+  const Day=Dateof.getDay()
+  let today;
+  if(Day==0){
+    today="Sunday"
+  }
+  else if(Day==1){
+    today="Monday"
+  }
+  else if(Day==2){
+    today="Tuesday"
+  }
+  else if(Day==3){
+    today="Wednesday"
+  }
+  else if(Day==4){
+    today="Thursday"
+  }
+  else if(Day==5){
+    today="Friday"
+  }
+  else if(Day==6){
+    today="Saturday"
+  }
+  console.log(today);
+  commit("SetDate",today);
+}
 
 export {
   RegisterUser,
@@ -348,5 +397,6 @@ export {
   Updatecourses,
   GetAllusers,
   ChangeProfilename,
-  ChangeProfilePicture
+  ChangeProfilePicture,
+  GetDate
 };

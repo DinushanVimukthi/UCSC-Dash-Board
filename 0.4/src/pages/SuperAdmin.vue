@@ -1,7 +1,7 @@
 <template>
     <div class="q-ma-sm flex flex-center">
         <q-card class="q-pa-lg q-ma-lg my-card" v-for="(users,key) in All_users" :key="key">
-            <q-card-section class="flex flex-center">
+            <q-card-section class="flex flex-center column">
                 <q-img :src="users.Url" spinner-color="red" style="height: 140px; max-width: 150px">
                     <template v-slot:loading>
                         <div class="text-yellow">

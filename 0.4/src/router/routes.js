@@ -5,9 +5,8 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     beforeEnter: (to, from) => {
-
-      console.log(IsUser())
       return !IsUser();
+      // return true
     },
     children: [
       { path: '', component: () => import('pages/Auth.vue') }
@@ -18,7 +17,10 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     beforeEnter: (to, from) => {
 
-      console.log(IsUser())
+      console.log(to)
+      console.log(from)
+
+      console.log("Dash");
       return IsUser();
     },
     children: [
@@ -29,7 +31,7 @@ const routes = [
     path: '/SuperAdmin',
     component: () => import('layouts/MainLayout.vue'),
     beforeEnter: (to, from) => {
-
+      // console.log(IsSuperuser());
       return IsSuperuser();
     },
     children: [

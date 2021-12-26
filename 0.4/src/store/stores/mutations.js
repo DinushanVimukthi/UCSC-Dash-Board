@@ -12,6 +12,9 @@ const updatecourse = (state, payload) => {
 const AddAllUsers = (state, payload) => {
   state.Allusers[payload.ID] = payload.Data;
 };
+const SetDate= (state, payload) => {
+  state.Today = payload;
+};
 const UpdateAUser = (state, payload) => {
   Object.assign(state.Allusers[payload.ID], payload.Data);
 };
@@ -40,5 +43,5 @@ export {
   updatecourse,
   RemovecourseMut,
   updateusers,
-  
+  SetDate
 };

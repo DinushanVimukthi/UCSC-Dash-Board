@@ -13,16 +13,30 @@
           @click="ToggleDark"
         />
         <div class="q-pa-sm absolute-top-right">
-        <span class="q-ma-sm">{{GetUsername}}</span>
-          <q-avatar class="cursor-pointer" size="2.5rem" @click="triggers = true">
-            <img :src="getpic != null ? getpic : 'https://cdn.quasar.dev/img/avatar.png'"/>
-            <q-tooltip v-if="getpic!=null" class="bg-positive text-black">
-              Click to Edit Profile 
-            </q-tooltip>
+          <span class="q-ma-sm">{{ GetUsername }}</span>
+          <q-avatar
+            style="margin-left:10px"
+            class="cursor-pointer"
+            size="2.5rem"
+            @click="triggers = true"
+          >
+            <img :src="getpic != null ? getpic : 'https://cdn.quasar.dev/img/avatar.png'" />
+            <q-tooltip v-if="getpic != null" class="bg-positive text-black">Click to Edit Profile</q-tooltip>
           </q-avatar>
 
           <q-btn v-if="page === 'dash'" outline icon="lock_open" label="SignOut" @click="LogOut" />
-          <q-btn v-if="IsSuperAdmin" label="Super" :to="'/SuperAdmin'" />
+          <q-btn
+            style="margin-left:10px"
+            v-if="IsSuperAdmin && $route.fullPath != '/SuperAdmin'"
+            label="Super"
+            :to="'/SuperAdmin'"
+          />
+          <q-btn
+            style="margin-left:10px"
+            v-if="IsSuperAdmin && $route.fullPath === '/SuperAdmin'"
+            label="Dash"
+            :to="'/dash'"
+          />
           <q-dialog
             v-model="triggers"
             persistent
@@ -30,13 +44,19 @@
             transition-show="slide-up"
             transition-hide="slide-down"
           >
-          <edit-profile/>
-         
+            <edit-profile />
           </q-dialog>
         </div>
       </q-toolbar>
     </q-header>
-
+    <q-footer :class="this.$q.dark.mode ? 'row bg-dark' : 'row'">
+    <div v-if="!close"  :class="(this.$q.dark.mode?'bg-dark ':'bg-light ')+'text-h7 text-pink absolute-bottom-right q-ma-lg'">
+    {{Days+"D : "+hours+ "H : "+minutes+ "M : "+seconds+"S"}} Time Left
+    <!--<q-btn :class="(this.$q.dark.mode?'bg-grey-9 ':'bg-grey-4 ')+'rounded-borders'" icon="close" @click="closepop"/>-->
+    </div>
+    
+    
+    </q-footer>
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -58,13 +78,16 @@ import { ref } from 'vue'
 export default defineComponent({
   name: 'MainLayout',
   setup() {
+    const close=ref(false)
     return {
       triggers: ref(false),
       maximizedToggle: ref(false),
+      close
+
     }
   },
   computed: {
-    ...mapGetters("stores", ["IsSuperAdmin", "getpic",'GetUsername']),
+    ...mapGetters("stores", ["IsSuperAdmin", "getpic", 'GetUsername', 'SecondSemExam']),
     page() {
       if (this.$route.fullPath === "/")
         return '/'
@@ -75,11 +98,48 @@ export default defineComponent({
   components: {
     EditProfile: EditProfile
   },
+  data() {
+    return {
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      Days: 0,
+    }
+  },
+  mounted() {
+    this.setTime()
+  },
   methods: {
     ...mapActions('stores', ['LogOut']),
     ToggleDark() {
       console.log(this.$q.dark.mode);
       this.$q.dark.toggle()
+    },
+    closepop(){
+      this.close=true
+      setTimeout(() => {
+        this.close=false
+      }, 5000);
+    },
+    setTime() {
+
+      setInterval(() => {
+          var firstDate = new Date();
+          // console.log(firstDate);
+          var secondDate = new Date(this.SecondSemExam.Date);
+          var time_difference = secondDate.getTime() - firstDate.getTime();
+          var days_difference =Math.round(time_difference / (1000 * 60 * 60 * 24));
+          var Hrs_difference = (Math.round(time_difference / (1000 * 60 * 60 ))%24);
+          var Minutes_difference = (Math.round(time_difference /(1000*60))%60);
+          var second_difference = (Math.round(time_difference / (1000))%60);
+          this.Days=days_difference;
+          this.hours=Hrs_difference;
+          this.minutes=Minutes_difference;
+          this.seconds=second_difference;
+      }, 1000)
+    },
+    checkSingleDigit(digit) {
+      return ('0' + digit).slice(-2)
     }
   },
 
