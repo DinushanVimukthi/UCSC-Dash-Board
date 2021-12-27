@@ -5,8 +5,9 @@
         <q-tabs v-model="tab" vertical class="text-teal q-ma-lg">
           <q-tab name="Lectures" icon="library_books" label="Lectures" />
           <q-tab v-if="UserAdmin" name="Admin" icon="library_books" label="Admin Board" />
-          <q-tab disable name="alarms" icon="alarm" label="Alarms" />
-          <q-tab disable name="movies" icon="movie" label="Movies" />
+          <q-tab name="events" icon="timer" label="Special Events" />
+          <q-tab v-show="false" disable name="alarms" icon="alarm" label="Alarms" />
+          
         </q-tabs>
       </template>
       <template v-slot:after>
@@ -24,7 +25,7 @@
               <q-card
                 dark
                 bordered
-                :class="(!$q.dark.isActive?'bg-blue-7 ':'bg-grey-9 ')+'my-card q-ma-md'"
+                :class="(!$q.dark.isActive ? 'bg-blue-7 ' : 'bg-grey-9 ') + 'my-card q-ma-md'"
                 v-for="(courses,ID) in Tcourses"
                 :key="ID"
               >
@@ -65,7 +66,6 @@
 
           <q-tab-panel v-if="UserAdmin" name="Admin">
             <div class="text-h4 q-ma-lg">Manage Lectures</div>
-
             <div class="flex flex-center">
               <q-card
                 :class="$q.dark.isActive ? 'bg-green-2 flex flex-center q-pa-md q-ma-lg my-card2 cursor-pointer' : 'bg-green-7 flex flex-center q-pa-md q-ma-lg my-card2 cursor-pointer'"
@@ -122,16 +122,53 @@
                 </q-img>
               </q-card>
             </div>
-
+            <div class="text-h4 q-ma-lg">Manage Events</div>
+            <div class="flex flex-center">
+              <q-card
+                :class="$q.dark.isActive ? 'cursor-pointer bg-red-2 flex flex-center q-pa-md q-ma-lg my-card2' : 'cursor-pointer bg-red-7 flex flex-center q-pa-md q-ma-lg my-card2'"
+                @click="Addevent = true"
+              >
+                <q-img
+                  src="https://firebasestorage.googleapis.com/v0/b/studentapp-5773b.appspot.com/o/icons%2FAdd.png?alt=media&token=03af4e0d-4f7f-4684-a575-b9b39301f4cf"
+                  style="width:200px; height:200px"
+                >
+                  <div class="absolute-bottom text-subtitle2 text-center">Add Event</div>
+                  <q-tooltip
+                    class="bg-red text-body2"
+                    :offset="[10, 10]"
+                    transition-show="rotate"
+                    transition-hide="rotate"
+                  >Add An Event</q-tooltip>
+                </q-img>
+              </q-card>
+              <q-card
+              v-if="GetSpecialEventsID.length > 0"
+                :class="$q.dark.isActive ? 'cursor-pointer bg-red-2 flex flex-center q-pa-md q-ma-lg my-card2' : 'cursor-pointer bg-red-7 flex flex-center q-pa-md q-ma-lg my-card2'"
+                @click="EditeventDialog"
+              >
+                <q-img
+                  src="https://firebasestorage.googleapis.com/v0/b/studentapp-5773b.appspot.com/o/icons%2FEdit.png?alt=media&token=52ff3939-3709-47e8-baa9-706b140a6334"
+                  style="width:200px; height:200px"
+                >
+                  <div class="absolute-bottom text-subtitle2 text-center">Edit Event</div>
+                  <q-tooltip
+                    class="bg-red text-body2"
+                    :offset="[10, 10]"
+                    transition-show="rotate"
+                    transition-hide="rotate"
+                  >Add An Event</q-tooltip>
+                </q-img>
+              </q-card>
+            </div>
             <div class="q-pa-md q-gutter-sm">
               <q-dialog v-model="confirm" persistent>
-                <q-card>
+                <q-card class="delprompt">
                   <q-card-section class="row items-center">
                     <q-avatar class="bg-red" icon="warning" color="primary" text-color="white" />
                     <span class="q-ml-sm text-red text-dark">Are You Sure to Delete Course?</span>
                   </q-card-section>
 
-                  <q-card-actions align="right" class="bg-grey-1">
+                  <q-card-actions align="right">
                     <q-btn class="bg-primary" flat label="Cancel" color="white" v-close-popup />
                     <q-btn class="bg-red" flat label="Delete" color="white" @click="RemoveCourses" />
                   </q-card-actions>
@@ -279,8 +316,8 @@
                         </q-input>
                       </span>
                       <span>
-                        Lecture Link:{{tmpRecurringlink}}
-                        <q-toggle v-model="tmpRecurringlink" color="red"/>
+                        Lecture Link:{{ tmpRecurringlink }}
+                        <q-toggle v-model="tmpRecurringlink" color="red" />
                         <span class="text-yellow">{{ tmpRecurringlink ? "Recurring Meeting" : "" }}</span>
                         <q-input filled v-model="tmplink" :dense="dense" />
                       </span>
@@ -407,16 +444,115 @@
                   </q-card-section>
                 </q-card>
               </q-dialog>
+
+              <q-dialog v-model="Addevent" persistent>
+                <q-card class="Addevent">
+                  <q-bar>
+                    Add Event
+                    <q-space />
+                    <q-btn dense flat icon="close" v-close-popup @click="ClearAll">
+                      <q-tooltip class="bg-white text-primary">Close</q-tooltip>
+                    </q-btn>
+                  </q-bar>
+                  <q-card-section class="flex-flex-center">
+                    <q-form @submit="Add_event">
+                      <q-input
+                        class="q-ma-sm full-width"
+                        filled
+                        v-model="tmpEventName"
+                        label="Event Name"
+                        lazy-rules
+                        :rules="[val => val && val.length > 3 || 'Please type something']"
+                      />
+                      <div class="q-ma-lg row items-start">
+                        <q-date
+                          v-model="tmpEventDate"
+                          mask="MM-DD-YYYY HH:mm"
+                          color="purple"
+                          now-btn
+                        />
+                        <q-time
+                          v-model="tmpEventDate"
+                          mask="MM-DD-YYYY HH:mm"
+                          color="purple"
+                          now-btn
+                        />
+                      </div>
+                      <q-btn
+                        class="full-width"
+                        color="grey-7"
+                        text-color="black"
+                        label="Add Event"
+                        type="submit"
+                      />
+                    </q-form>
+                  </q-card-section>
+                </q-card>
+              </q-dialog>
+
+              <q-dialog v-model="Editevent" persistent>
+                <q-card class="Addevent">
+                  <q-bar>
+                    Edit Event
+                    <q-space />
+                    <q-btn dense flat icon="close" v-close-popup>
+                      <q-tooltip class="bg-white text-primary">Close</q-tooltip>
+                    </q-btn>
+                  </q-bar>
+                  <q-card-section class="flex-flex-center">
+                    <q-form @submit="EditEvent">
+                      <q-select
+                        v-model="EventID"
+                        :options="GetSpecialEventsID"
+                        label="All Events ID"
+                      />
+                      <q-input
+                        class="q-ma-sm full-width"
+                        filled
+                        v-model="tmpEventName"
+                        label="Event Name"
+                        lazy-rules
+                        :rules="[val => val && val.length > 3 || 'Please type something']"
+                      />
+                      <div class="q-ma-lg row items-start">
+                        <q-date
+                          v-model="tmpEventDate"
+                          mask="MM-DD-YYYY HH:mm"
+                          color="purple"
+                          now-btn
+                        />
+                        <q-time
+                          v-model="tmpEventDate"
+                          mask="MM-DD-YYYY HH:mm"
+                          color="purple"
+                          now-btn
+                        />
+                      </div>
+                      <q-btn
+                        class="full-width"
+                        color="grey-7"
+                        text-color="black"
+                        label="Update Event"
+                        type="submit"
+                      />
+                    </q-form>
+                  </q-card-section>
+                </q-card>
+              </q-dialog>
             </div>
           </q-tab-panel>
 
           <q-tab-panel name="alarms">
-            <div class="text-h4 q-mb-md">Alarms</div>
+            <div class="text-h4 q-mb-md">Alarm</div>
+            <div>Exam Day Counter</div>
+            <Notification />
+
             <Fileuploader />
           </q-tab-panel>
 
-          <q-tab-panel name="movies">
-            <div class="text-h4 q-mb-md">Movies</div>
+          <q-tab-panel name="events">
+            <div class="text-h4 q-mb-md">Events</div>
+            <Notification />
           </q-tab-panel>
         </q-tab-panels>
       </template>
@@ -428,6 +564,7 @@ import { ref, watch } from "vue";
 import { mapActions, mapGetters, useStore } from 'vuex'
 import { useQuasar } from 'quasar'
 import Fileuploader from "components/Fileuploader";
+import Notification from "components/Notification";
 
 export default {
   setup() {
@@ -451,20 +588,23 @@ export default {
     const tmplink = ref('')
     const $store = useStore()
     const Editdialog = ref(false)
+    const Editevent = ref(false)
+    let tmpEventDate=ref('')
+    let tmpEventName=ref('')
+    const EventID = ref('')
+    let SpecialEvents = $store.getters["stores/GetSpecialEvents"]
+    watch(EventID, () => {
+      console.log(EventID.value);
+      if (Editevent.value) {
+        tmpEventDate.value = (SpecialEvents[EventID.value].Date + " " + SpecialEvents[EventID.value].Time).split("/").join("-")
+        console.log(tmpEventDate.value)
+        console.log("Evented");
+        tmpEventName.value= EventID.value.split("_").join(" ")
+      }
+
+    })
     let tmpcourses = $store.getters["stores/courses"]
     watch(model, () => {
-      // letCourseType = model.value.split(" ")
-      // let tmpmodel=CourseType[0]  ;
-      // if(CourseType[1]==="Practical"){
-      //   tmpmodel+="PS"
-      // }
-      // else if(CourseType[1]==="Tutorial"){
-      //   tmpmodel+="TS"
-      // }
-      // else if(CourseType[1]==="Live"){
-      //   tmpmodel+="LS"
-      // }
-
       console.log("Watched", model.value)
       console.log(tmpcourses[model.value])
       if (Editdialog.value) {
@@ -481,6 +621,7 @@ export default {
       }
     })
     return {
+      EventID,
       tmpcourse,
       Days,
       Time,
@@ -500,6 +641,11 @@ export default {
       splitterModel: ref(20),
       text: ref(''),
       ph: ref(''),
+      tmpEventDate,
+      tmpEventName,
+      Addevent: ref(false),
+      Editevent,
+      Removeevent: ref(false),
       alert: ref(false),
       confirm: ref(false),
       prompt: ref(false),
@@ -514,15 +660,18 @@ export default {
     }
   },
   components: {
-    Fileuploader: Fileuploader
+    Fileuploader: Fileuploader,
+    Notification: Notification
   },
   mounted() {
     this.getCourses();
+
+    this.GetEvents();
     // this.model= Object.keys(this.courses)[0]
     this.model = this.AllcoursesID[0]
   },
   computed: {
-    ...mapGetters('stores', ['courses', 'Tcourses', 'AllcoursesID', 'UserAdmin', 'GetFullname']),
+    ...mapGetters('stores', ['courses', 'Tcourses', 'AllcoursesID', 'UserAdmin', 'GetFullname', 'GetSpecialEventsID', 'GetSpecialEvents']),
     GetModifiedTime() {
       return key => {
         console.log(key);
@@ -531,12 +680,12 @@ export default {
         let Dates = new Date()
         let tmpDay = ((Dates.getDate() > 9 ? Dates.getDate() : "0" + Dates.getDate()) + "/" + (Dates.getMonth() + 1) + "/" + Dates.getFullYear());
 
-        let tmpTime = (Dates.getHours() > 12 ? Dates.getHours() - 12 : (Dates.getHours()==0?"0"+Dates.getHours():Dates.getHours())) + ":" + (Dates.getMinutes() >= 10 ? Dates.getMinutes() : "0" + Dates.getMinutes()) + ":" + (Dates.getSeconds() >= 10 ? Dates.getSeconds() : "0" + Dates.getSeconds());
+        let tmpTime = (Dates.getHours() > 12 ? Dates.getHours() - 12 : (Dates.getHours() == 0 ? "0" + Dates.getHours() : Dates.getHours())) + ":" + (Dates.getMinutes() >= 10 ? Dates.getMinutes() : "0" + Dates.getMinutes()) + ":" + (Dates.getSeconds() >= 10 ? Dates.getSeconds() : "0" + Dates.getSeconds());
         console.log("tmpDay", tmpDay);
         console.log("tmpTime", tmpTime);
         console.log(coursemodedDay);
         console.log(coursemodedTime)
-        if (coursemodedTime.substring(9, 11)=="PM") {
+        if (coursemodedTime.substring(9, 11) == "PM") {
           coursemodedTime = (parseInt(coursemodedTime.substring(0, 2)) + 12) + coursemodedTime.substring(2, 8)
         }
         console.log("updated", coursemodedTime);
@@ -563,17 +712,17 @@ export default {
           if (Dates.getDate() > coursemodedDay.substring(0, 2)) {
             console.log("nuu", coursemodedDay.substring(0, 2));
             return (Dates.getDate() - parseInt(coursemodedDay.substring(0, 2))) + " Days Ago"
-          }else{
+          } else {
             return "Inform Admin"
           }
         }
-        else if(Dates.getMonth() + 1 -parseInt(coursemodedDay.split("/")[1])<2){
-          let MD=parseInt(((Dates.getMonth()>6?((Dates.getMonth()%2==0)?31:30):((Dates.getMonth()%2==0)?30:31))))
-            return (Dates.getDate()+MD  - parseInt(coursemodedDay.substring(0, 2))) + " Days Ago"
-        }else if(Dates.getMonth() + 1 -parseInt(coursemodedDay.split("/")[1])>1){
-            return (Dates.getMonth()  - parseInt(coursemodedDay.split("/")[1])) + " Months Ago"
+        else if (Dates.getMonth() + 1 - parseInt(coursemodedDay.split("/")[1]) < 2) {
+          let MD = parseInt(((Dates.getMonth() > 6 ? ((Dates.getMonth() % 2 == 0) ? 31 : 30) : ((Dates.getMonth() % 2 == 0) ? 30 : 31))))
+          return (Dates.getDate() + MD - parseInt(coursemodedDay.substring(0, 2))) + " Days Ago"
+        } else if (Dates.getMonth() + 1 - parseInt(coursemodedDay.split("/")[1]) > 1) {
+          return (Dates.getMonth() - parseInt(coursemodedDay.split("/")[1])) + " Months Ago"
         }
-        
+
 
         else {
           return "Just Now"
@@ -615,7 +764,81 @@ export default {
     }
   },
   methods: {
-    ...mapActions('stores', ['getCourses', 'Updatecourses', 'RemoveCourse']),
+    ...mapActions('stores', ['getCourses', 'Updatecourses', 'RemoveCourse', 'GetEvents', 'AddSpecialEvent']),
+    EditEvent(){
+      if (this.tmpEventDate != "") {
+        const name = this.tmpEventName.split(" ").join("_")
+        let Date = this.tmpEventDate.substring(0, this.tmpEventDate.indexOf(" "))
+        Date = Date.split("-").join("/")
+        const Time = this.tmpEventDate.substring(this.tmpEventDate.indexOf(" ")+1) + ":00"
+        console.log(Date, Time, name);
+        this.Addevent = false;
+        this.AddSpecialEvent({
+          name: name,
+          date: Date,
+          time: Time
+        })
+        this.q.notify({
+          type: 'success',
+          color: 'green-4',
+          icon: 'success',
+          message: 'Event Updated Successfully'
+        })
+        this.tmpEventDate = '',
+          this.tmpEventName = ''
+          this.Editevent = false;
+      }
+      else {
+        this.q.notify({
+          type: 'danger',
+          color: 'red-4',
+          icon: 'error',
+          message: 'Please Enter Date'
+        })
+      }
+    },
+    Add_event() {
+      console.log("Add Event");
+      
+      if (this.tmpEventDate != "") {
+        const name = this.tmpEventName.split(" ").join("_")
+        let Date = this.tmpEventDate.substring(0, this.tmpEventDate.indexOf(" "))
+        Date = Date.split("-").join("/")
+        const Time = this.tmpEventDate.substring(this.tmpEventDate.indexOf(" ")+1) + ":00"
+        console.log(Date, Time, name);
+        this.Addevent = false;
+        this.AddSpecialEvent({
+          name: name,
+          date: Date,
+          time: Time
+        })
+        this.q.notify({
+          type: 'success',
+          color: 'green-4',
+          icon: 'success',
+          message: 'Event Added Successfully'
+        })
+        this.tmpEventDate = '',
+          this.tmpEventName = ''
+      }
+      else {
+        this.q.notify({
+          type: 'danger',
+          color: 'red-4',
+          icon: 'error',
+          message: 'Please Enter Date'
+        })
+      }
+    },
+    EditeventDialog() {
+      // this.tmpEventDate=
+      this.Editevent = true;
+      this.EventID = this.GetSpecialEventsID[0];
+      this.tmpEventDate = (this.GetSpecialEvents[this.EventID].Date + " " + this.GetSpecialEvents[this.EventID].Time).split("/").join("-")
+      this.tmpEventName = this.EventID.split("_").join(" ")
+      // this.tmpEventDate=this.GetEvents[EventID]
+
+    },
     AddCourse() {
       console.log("Added");
       console.log(this.newcourse.substring(0, 7));
@@ -757,10 +980,20 @@ export default {
 .DialogBox
   min-width: 500px
   min-height: 600px
+.Addevent
+  min-width: 700px
+  min-height: 650px
+  max-width: 700px
+  max-height: 650px
 .my-card2
   width: 100%
   max-width: 250px
   min-width: 250px
   max-height: 250px
   min-height: 250px
+.delprompt
+  max-height: 150px
+  min-height: 150px
+  max-width: 300px
+  min-width: 300px
 </style>

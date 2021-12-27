@@ -17,7 +17,7 @@ const Tcourses=(state)=>{
 const UserAdmin=(state)=>{
   if(state.users.Data)
   {
-    console.log(state.users.Data)
+    // console.log(state.users.Data)
     return state.users.Data.admin
   }
   else
@@ -51,7 +51,7 @@ const GetUsername=(state)=>{
 const IsSuperAdmin=(state)=>{
   if(state.users.Data)
   {
-    console.log(state.users.Data)
+    // console.log(state.users.Data)
     return state.users.Data.SuperAdmin
   }
   else
@@ -62,7 +62,7 @@ const IsSuperAdmin=(state)=>{
 const getpic=(state)=>{
   if(state.users.Data)
   {
-    console.log(state.users.Data)
+    // console.log(state.users.Data)
     return state.users.Data.Url
   }
   else
@@ -72,6 +72,15 @@ const getpic=(state)=>{
 }
 const courses=(state)=>{
   return state.courses
+}
+const GetSpecialEventsID=(state)=>{
+  let EventID=[]
+  Object.keys(state.Special_Events).forEach(key=>{
+    // console.log(key,value);
+    EventID.push(key)
+  })
+  return EventID
+  // return state.SpecialEventsID
 }
 const AllcoursesID=(state)=>{
  
@@ -108,5 +117,7 @@ const GetFullname=(state)=>{
 const SecondSemExam=(state)=>{
   return state.SemesterExamTime.Second
 }
-
-export {courses,AllcoursesID,Tcourses,UserAdmin,All_users,IsSuperAdmin,getpic,User,UserID,GetUsername,GetFullname,SecondSemExam}
+const GetSpecialEvents=(state)=>{
+  return state.Special_Events
+}
+export {GetSpecialEventsID,courses,AllcoursesID,Tcourses,UserAdmin,All_users,IsSuperAdmin,getpic,User,UserID,GetUsername,GetFullname,SecondSemExam,GetSpecialEvents}

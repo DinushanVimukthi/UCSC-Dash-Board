@@ -3,7 +3,7 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
-  updateuser
+  updateuser,
 } from "firebase/auth";
 import {
   ref,
@@ -14,7 +14,12 @@ import {
   remove,
   onChildRemoved,
 } from "firebase/database";
-import { uploadBytes, ref as Sref, getDownloadURL,deleteObject } from "firebase/storage";
+import {
+  uploadBytes,
+  ref as Sref,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import { fAuth, fDb, fS } from "boot/firebase";
 import { Notify } from "quasar";
 import imageCompression from "browser-image-compression";
@@ -36,7 +41,6 @@ const MakeAdmin = async ({}, ID) => {
       message: "User is an admin",
       color: "positive",
     });
-
   }
 };
 const RegisterUser = async ({ commit }, payload) => {
@@ -184,7 +188,7 @@ function HandleAuthenticationStateChange({ commit, dispatch }) {
           // console.log(this.$router);
           // if(this.$route.fullPath != "/SuperAdmin")
           // {
-            this.$router.push({ path: "/dash" });
+          this.$router.push({ path: "/dash" });
           // }
         }
       });
@@ -258,14 +262,27 @@ function Updatecourses({ commit }, payload) {
   // remove(courseref).then(()=>{
   //   console.log("Removed");
   // })
-  let Dates=new Date();
-  let Datesofmodify=((Dates.getDate()>9?Dates.getDate():"0"+Dates.getDate())+"/"+(Dates.getMonth()+1)+"/"+Dates.getFullYear());
-  let Time=(Dates.getHours()>12?Dates.getHours()-12:(Dates.getHours()==0?"0"+Dates.getHours():Dates.getHours()))+":"+(Dates.getMinutes()>=10?Dates.getMinutes():"0"+Dates.getMinutes())+":"+(Dates.getSeconds()>=10?Dates.getSeconds():"0"+Dates.getSeconds());
-  if(Dates.getHours()>12){
-    Time+=" PM";
-  }
-  else{
-    Time+=" AM";
+  let Dates = new Date();
+  let Datesofmodify =
+    (Dates.getDate() > 9 ? Dates.getDate() : "0" + Dates.getDate()) +
+    "/" +
+    (Dates.getMonth() + 1) +
+    "/" +
+    Dates.getFullYear();
+  let Time =
+    (Dates.getHours() > 12
+      ? Dates.getHours() - 12
+      : Dates.getHours() == 0
+      ? "0" + Dates.getHours()
+      : Dates.getHours()) +
+    ":" +
+    (Dates.getMinutes() >= 10 ? Dates.getMinutes() : "0" + Dates.getMinutes()) +
+    ":" +
+    (Dates.getSeconds() >= 10 ? Dates.getSeconds() : "0" + Dates.getSeconds());
+  if (Dates.getHours() > 12) {
+    Time += " PM";
+  } else {
+    Time += " AM";
   }
   console.log(Time);
   console.log(payload);
@@ -279,7 +296,7 @@ function Updatecourses({ commit }, payload) {
     lastmodified: payload.lastmodified,
     lastmodifiedTime: Time,
     lastmodifiedDate: Datesofmodify,
-    Recurring:payload.RecurringMeeting
+    Recurring: payload.RecurringMeeting,
   });
 
   console.log("Successfully Updated");
@@ -329,65 +346,106 @@ function RemoveCourse({ commit }, ID) {
   });
   commit("RemovecourseMut", ID);
 }
-const ChangeProfilename=({},payload)=>{
+const ChangeProfilename = ({}, payload) => {
   console.log(payload);
-  const userref = ref(fDb, "users/"+fAuth.currentUser.uid+"/name");
-  set(userref,payload.name)
-}
-const ChangeProfilePicture=async ({},payload)=>{
- 
+  const userref = ref(fDb, "users/" + fAuth.currentUser.uid + "/name");
+  set(userref, payload.name);
+};
+const ChangeProfilePicture = async ({}, payload) => {
   // console.log(payload);
   console.log(payload.file.type);
-  const StorRef=Sref(fS,"images/"+fAuth.currentUser.uid);
+  const StorRef = Sref(fS, "images/" + fAuth.currentUser.uid);
 
-  const Previousref=Sref(fS,"images/"+fAuth.currentUser.uid);
-  deleteObject(Previousref).then((del)=>{
+  const Previousref = Sref(fS, "images/" + fAuth.currentUser.uid);
+  deleteObject(Previousref).then((del) => {
     console.log(del);
-  })
+  });
   const options = {
     maxSizeMB: 1,
     maxWidthOrHeight: 1920,
     useWebWorker: true,
   };
-  const compressedfile=await imageCompression(payload.file,options);
-  const Uploadnew=await uploadBytes(StorRef,compressedfile);
+  const compressedfile = await imageCompression(payload.file, options);
+  const Uploadnew = await uploadBytes(StorRef, compressedfile);
   console.log(Uploadnew);
-  const newUrl=await getDownloadURL(StorRef,fAuth.currentUser.uid);
-  const userref = ref(fDb, "users/"+fAuth.currentUser.uid+"/Url");
-  set(userref,newUrl)
-}
-const GetDate=async ({commit})=>{
+  const newUrl = await getDownloadURL(StorRef, fAuth.currentUser.uid);
+  const userref = ref(fDb, "users/" + fAuth.currentUser.uid + "/Url");
+  set(userref, newUrl);
+};
+const GetDate = async ({ commit }) => {
   console.log("Dates");
-  const Dateof=new Date();
-  const Day=Dateof.getDay()
+  const Dateof = new Date();
+  const Day = Dateof.getDay();
   let today;
-  if(Day==0){
-    today="Sunday"
-  }
-  else if(Day==1){
-    today="Monday"
-  }
-  else if(Day==2){
-    today="Tuesday"
-  }
-  else if(Day==3){
-    today="Wednesday"
-  }
-  else if(Day==4){
-    today="Thursday"
-  }
-  else if(Day==5){
-    today="Friday"
-  }
-  else if(Day==6){
-    today="Saturday"
+  if (Day == 0) {
+    today = "Sunday";
+  } else if (Day == 1) {
+    today = "Monday";
+  } else if (Day == 2) {
+    today = "Tuesday";
+  } else if (Day == 3) {
+    today = "Wednesday";
+  } else if (Day == 4) {
+    today = "Thursday";
+  } else if (Day == 5) {
+    today = "Friday";
+  } else if (Day == 6) {
+    today = "Saturday";
   }
   console.log(today);
-  commit("SetDate",today);
-}
+  commit("SetDate", today);
+};
+const AddSpecialEvent = ({}, payload) => {
+  console.log(payload);
+  const eventref = ref(fDb, "Events/Special/" + payload.name);
+  set(eventref, {
+    Date: payload.date,
+    Time: payload.time,
+  });
+};
+const GetEvents = async ({ commit }) => {
+  // console.log("Events");
+  const eventref = ref(fDb, "Events/Special");
+  get(eventref).then((snapshot) => {
+    snapshot.forEach((child) => {
+      // console.log(child.key,child.val());
+      const EventName = child.key;
+      const EventData = child.val();
+      commit("Set_Special_Events", { EventName, EventData });
+    });
+  });
+  onChildAdded(eventref, (snapshot) => {
+    // console.log("child Added!");
+    const EventName = snapshot.key;
+    const EventData = snapshot.val();
+    commit("Set_Special_Events", {
+      EventName,
+      EventData,
+    });
+  });
+  onChildRemoved(eventref, (snapshot) => {
+    // console.log("child Removed!");
+    const EventName = snapshot.key;
+    commit("Remove_Special_Events", EventName);
+  });
+  onChildChanged(eventref, (snapshot) => {
+    // console.log("child Added!");
+    const EventName = snapshot.key;
+    const EventData = snapshot.val();
+    commit("update_Special_Events", {
+      EventName,
+      EventData,
+    });
+  });
+};
+const DestroyEvents = async ({ commit }) => {
+  commit("ClearEvents");
+};
 
 export {
+  AddSpecialEvent,
   RegisterUser,
+  DestroyEvents,
   RemoveCourse,
   LogUser,
   HandleAuthenticationStateChange,
@@ -398,5 +456,6 @@ export {
   GetAllusers,
   ChangeProfilename,
   ChangeProfilePicture,
-  GetDate
+  GetDate,
+  GetEvents,
 };

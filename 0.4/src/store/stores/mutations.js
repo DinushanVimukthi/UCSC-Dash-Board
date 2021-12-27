@@ -33,8 +33,24 @@ const clearuser = (state) => {
 const RemovecourseMut = (state, ID) => {
   delete state.courses[ID];
 };
+const Set_Special_Events= (state, payload) => {
+  state.Special_Events[payload.EventName] = payload.EventData;
+};
+const update_Special_Events= (state, payload) => {
+  // state.Special_Events[payload.EventName] = payload.EventData;
+  Object.assign(state.Special_Events[payload.EventName],payload.EventData);
+};
+const ClearEvents=(state)=>{
+  state.Special_Events = {};
+}
+const Remove_Special_Events= (state, EventName) => {
+  delete state.Special_Events[EventName];
+};
 export {
   userstore,
+  Remove_Special_Events,
+  update_Special_Events,
+  ClearEvents,
   AddAllUsers,
   UpdateAUser,
   RemoveAUser,
@@ -43,5 +59,6 @@ export {
   updatecourse,
   RemovecourseMut,
   updateusers,
-  SetDate
+  SetDate,
+  Set_Special_Events
 };

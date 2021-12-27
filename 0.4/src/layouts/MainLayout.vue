@@ -49,14 +49,10 @@
         </div>
       </q-toolbar>
     </q-header>
-    <q-footer :class="this.$q.dark.mode ? 'row bg-dark' : 'row'">
-    <div v-if="!close"  :class="(this.$q.dark.mode?'bg-dark ':'bg-light ')+'text-h7 text-pink absolute-bottom-right q-ma-lg'">
-    {{Days+"D : "+hours+ "H : "+minutes+ "M : "+seconds+"S"}} Time Left
-    <!--<q-btn :class="(this.$q.dark.mode?'bg-grey-9 ':'bg-grey-4 ')+'rounded-borders'" icon="close" @click="closepop"/>-->
-    </div>
-    
-    
-    </q-footer>
+    <!--
+    <q-footer>
+    <q-btn label="Click" @click="setTime"/>
+    </q-footer>-->
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -98,19 +94,25 @@ export default defineComponent({
   components: {
     EditProfile: EditProfile
   },
-  data() {
-    return {
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-      Days: 0,
-    }
-  },
-  mounted() {
-    this.setTime()
-  },
   methods: {
     ...mapActions('stores', ['LogOut']),
+    ShowNotification()
+    {
+      const notification=new Notification("New mesage",{
+        body:"You have a new message",
+      })
+    },
+    async setTime(){
+      console.log("permission");
+      let permission =await Notification.requestPermission();
+      if(permission==="granted"){
+        this.ShowNotification()
+        console.log("permission granted");
+      }
+      else{
+        // this.ShowNotification()
+      }
+    },
     ToggleDark() {
       console.log(this.$q.dark.mode);
       this.$q.dark.toggle()
@@ -121,26 +123,6 @@ export default defineComponent({
         this.close=false
       }, 5000);
     },
-    setTime() {
-
-      setInterval(() => {
-          var firstDate = new Date();
-          // console.log(firstDate);
-          var secondDate = new Date(this.SecondSemExam.Date);
-          var time_difference = secondDate.getTime() - firstDate.getTime();
-          var days_difference =Math.round(time_difference / (1000 * 60 * 60 * 24));
-          var Hrs_difference = (Math.round(time_difference / (1000 * 60 * 60 ))%24);
-          var Minutes_difference = (Math.round(time_difference /(1000*60))%60);
-          var second_difference = (Math.round(time_difference / (1000))%60);
-          this.Days=days_difference;
-          this.hours=Hrs_difference;
-          this.minutes=Minutes_difference;
-          this.seconds=second_difference;
-      }, 1000)
-    },
-    checkSingleDigit(digit) {
-      return ('0' + digit).slice(-2)
-    }
   },
 
 
