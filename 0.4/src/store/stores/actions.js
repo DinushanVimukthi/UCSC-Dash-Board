@@ -397,15 +397,16 @@ const GetDate = async ({ commit }) => {
 };
 const AddSpecialEvent = ({}, payload) => {
   console.log(payload);
-  const eventref = ref(fDb, "Events/Special/" + payload.name);
+  const eventref = ref(fDb, "Events/" + payload.name);
   set(eventref, {
     Date: payload.date,
     Time: payload.time,
+    IsSpecial:payload.special
   });
 };
 const GetEvents = async ({ commit }) => {
-  // console.log("Events");
-  const eventref = ref(fDb, "Events/Special");
+  console.log("Events");
+  const eventref = ref(fDb, "Events/");
   get(eventref).then((snapshot) => {
     snapshot.forEach((child) => {
       // console.log(child.key,child.val());
@@ -441,9 +442,17 @@ const GetEvents = async ({ commit }) => {
 const DestroyEvents = async ({ commit }) => {
   commit("ClearEvents");
 };
+const Removeanevent = async ({}, payload) => {
+  const eventref = ref(fDb, "Events/" + payload);
+  remove(eventref).then(() => {
+    console.log("removed");
+  }
+  );
+}
 
 export {
   AddSpecialEvent,
+  Removeanevent,
   RegisterUser,
   DestroyEvents,
   RemoveCourse,

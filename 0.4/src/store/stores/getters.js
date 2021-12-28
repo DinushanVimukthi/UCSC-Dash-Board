@@ -118,6 +118,56 @@ const SecondSemExam=(state)=>{
   return state.SemesterExamTime.Second
 }
 const GetSpecialEvents=(state)=>{
+  let SpecialEvents={}
+  Object.keys(state.Special_Events).forEach(key=>{
+
+    if(state.Special_Events[key].IsSpecial)
+    {
+      SpecialEvents[key]=state.Special_Events[key]
+    }
+  })
+  return SpecialEvents
+}
+const GetNormalEvents=(state)=>{
+  let NormalEvents={}
+  Object.keys(state.Special_Events).forEach(key=>{
+
+    if(!state.Special_Events[key].IsSpecial)
+    {
+      NormalEvents[key]=state.Special_Events[key]
+    }
+  })
+  return NormalEvents
+}
+
+// const GetSpecialEvents=(state)=>{
+//   let SpecialEvents={}
+//   return state.Special_Events
+// }
+const GetAllEvents=(state)=>{
   return state.Special_Events
 }
-export {GetSpecialEventsID,courses,AllcoursesID,Tcourses,UserAdmin,All_users,IsSuperAdmin,getpic,User,UserID,GetUsername,GetFullname,SecondSemExam,GetSpecialEvents}
+const GetUpcomingEvents=(state)=>{
+  let UpcomingEvents={}
+  Object.keys(state.Special_Events).forEach(key=>{
+    let coursemodedTime = state.Special_Events[key].Time
+    // coursemodedTime = ((coursemodedTime.split(" ")[1] == 'PM' ? (parseInt(coursemodedTime.split(":")[0]) + 12) : coursemodedTime.split(":")[0]) + ":" + coursemodedTime.split(":")[1] + ":" + coursemodedTime.split(":")[2]).substring(0, 8)
+    // console.log(coursemodedTime);
+    let coursemodedDay = state.Special_Events[key].Date
+    
+  
+    let Dates = new Date()
+    let leftdate = new Date(coursemodedDay.split("/")[2], coursemodedDay.split("/")[0] - 1, coursemodedDay.split("/")[1], coursemodedTime.split(":")[0], coursemodedTime.split(":")[1], coursemodedTime.split(":")[2])
+    let DifferDays = Math.floor(Math.abs(Dates.getTime() - leftdate.getTime()) / (1000 * 60*60*24))
+    console.log(key,DifferDays);
+    if(DifferDays<7)
+    {
+      // UpcomingEvents[key]=state.Special_Events[key]
+      UpcomingEvents[key]=DifferDays
+    }
+  }
+  )
+  console.log(UpcomingEvents);
+  return UpcomingEvents
+}
+export {GetUpcomingEvents,GetNormalEvents,GetAllEvents,GetSpecialEventsID,courses,AllcoursesID,Tcourses,UserAdmin,All_users,IsSuperAdmin,getpic,User,UserID,GetUsername,GetFullname,SecondSemExam,GetSpecialEvents}

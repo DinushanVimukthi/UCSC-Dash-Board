@@ -1,9 +1,17 @@
 <template>
     <div>
-        Notify
+        <div class="full-width text-red text-center text-h3">Special Events</div>
         <div class="absolute-top-right">
             Enable Timers
             <q-toggle v-model="EnableTimer" />
+        </div>
+        <div class="flex flex-center">
+        <q-card v-if="Object.keys(GetSpecialEvents).length==0"  class="bg-grey-7 my-main-card flex-center">
+        <q-card-section class="flex-center absolute-center">
+         
+         <span class="bg-pink text-h3 flex text-center">No Special Event Found</span>
+        </q-card-section>
+        </q-card>
         </div>
         <div class="flex flex-center">
             <q-card
@@ -11,9 +19,48 @@
                 v-for="(EventsData,EventsName) in GetSpecialEvents"
                 :key="EventsName"
             >
-                <div class="flex flex-center column">
+                <div class="flex flex-center column q-ma-md">
                     <div
                         class="text-h4"
+                    >{{ EventsName.toString().split("_").join(" ").toUpperCase() }}</div>
+                    <div class="text-h6">{{ EventsData.Date }}</div>
+                    <div>{{ EventsData.Time }}</div>
+                </div>
+
+                <q-card-section v-if="EnableTimer" class="flex flex-center">
+                    <q-card
+                        v-for="(Time,key) in EventsTimer[EventsName]"
+                        :class="(EventsTimer[EventsName]['Days']<7? 'bg-red ':'bg-positive ')+ 'flex flex-center my-sub-card q-ma-md'"
+                        :key="Time+' '+key"
+                    >
+                        <div class="flex flex-center column">
+                            <span class="text-h7">{{ key.toString() }}</span>
+                            <span class="text-h3">{{ Time }}</span>
+                        </div>
+                    </q-card>
+                </q-card-section>
+            </q-card>
+        </div>
+    </div>
+    <div class="flex flex-center">
+        <div class="full-width text-red text-center text-h3">Events</div>
+        <div class="flex -flex-center">
+        <q-card v-if="Object.keys(GetNormalEvents).length==0"  class="bg-grey-7 my-main-card flex-center">
+        <q-card-section class="flex-center absolute-center">
+         
+         <span class="text-h3 flex text-center">No Event Found</span>
+        </q-card-section>
+        </q-card>
+        </div>
+        <div class="flex flex-center">
+            <q-card
+                class="bg-grey-7 my-main-card q-ma-md"
+                v-for="(EventsData,EventsName) in GetNormalEvents"
+                :key="EventsName"
+            >
+                <div class="flex flex-center column">
+                    <div
+                        class="text-h4 q-ma-md"
                     >{{ EventsName.toString().split("_").join(" ").toUpperCase() }}</div>
                     <div class="text-h6">{{ EventsData.Date }}</div>
                     <div>{{ EventsData.Time }}</div>
@@ -55,7 +102,7 @@ export default {
         this.countetimer();
     },
     computed: {
-        ...mapGetters("stores", ["GetSpecialEvents"]),
+        ...mapGetters("stores", ["GetSpecialEvents",'GetNormalEvents','GetAllEvents']),
         ClosedEvent() {
             return Dates => {
                 let date = new Date(Dates);
@@ -81,12 +128,11 @@ export default {
         },
         countetimer() {
             setInterval(() => {
-                this.Events = this.GetSpecialEvents
+                this.Events = this.GetAllEvents
                 Object.keys(this.Events).forEach(async key => {
                     let Time = this.Events[key].Time
                     let Date = this.Events[key].Date
                     this.EventsTimer[key] = this.setTime({ Time, Date })
-                    
                 })
             }, 1000);
 
