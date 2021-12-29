@@ -5,7 +5,7 @@
 import { defineComponent } from 'vue';
 import {mapActions} from "vuex";
 import {useQuasar} from "quasar";
-
+import {Update_Course,Update_Events} from "src/services/Notification";
 export default defineComponent({
   name: 'App',
   setup(){
@@ -18,6 +18,8 @@ export default defineComponent({
   mounted() {
       this.HandleAuthenticationStateChange()
       this.GetDate()
+      Update_Course()
+      Update_Events()
   }
 })
 </script>

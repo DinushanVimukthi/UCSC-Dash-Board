@@ -401,7 +401,7 @@ const AddSpecialEvent = ({}, payload) => {
   set(eventref, {
     Date: payload.date,
     Time: payload.time,
-    IsSpecial:payload.special
+    IsSpecial: payload.special,
   });
 };
 const GetEvents = async ({ commit }) => {
@@ -446,11 +446,14 @@ const Removeanevent = async ({}, payload) => {
   const eventref = ref(fDb, "Events/" + payload);
   remove(eventref).then(() => {
     console.log("removed");
-  }
-  );
-}
-
+  });
+};
+const AddAssignment =  ({ commit }, payload) => {
+  // commit("Add_Assignments", payload);
+  console.log(payload);
+};
 export {
+  
   AddSpecialEvent,
   Removeanevent,
   RegisterUser,
@@ -467,4 +470,5 @@ export {
   ChangeProfilePicture,
   GetDate,
   GetEvents,
+  AddAssignment
 };

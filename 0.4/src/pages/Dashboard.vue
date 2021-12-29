@@ -1,17 +1,22 @@
 <template>
   <div>
-    <q-splitter v-model="splitterModel" style="height: auto">
+    <q-splitter v-model="splitterModel" style="height: auto;">
       <template v-slot:before>
-        <q-tabs v-model="tab" vertical class="text-teal q-ma-lg">
+        <q-tabs v-model="tab" vertical class="text-teal q-ma-sm">
           <q-tab name="Lectures" icon="library_books" label="Lectures" />
           <q-tab v-if="UserAdmin" name="Admin" icon="library_books" label="Admin Board" />
+          <q-tab name="Assignments" icon="alarm" label="Assignments" />
           <q-tab name="events" icon="timer" label="Special Events" />
+          <q-tab name="Notifications" icon="alarm" label="Notification" />
+
           <q-tab v-show="false" disable name="alarms" icon="alarm" label="Alarms" />
         </q-tabs>
       </template>
+
       <template v-slot:after>
         <q-tab-panels
           v-model="tab"
+          class="q-pa-sm"
           animated
           vertical
           transition-prev="jump-up"
@@ -159,6 +164,7 @@
                 </q-img>
               </q-card>
               <q-card
+                v-if="GetSpecialEventsID.length > 0"
                 :class="$q.dark.isActive ? 'cursor-pointer bg-red-2 flex flex-center q-pa-md q-ma-lg my-card2' : 'cursor-pointer bg-red-7 flex flex-center q-pa-md q-ma-lg my-card2'"
                 @click="RemoveEventDialog"
               >
@@ -613,21 +619,30 @@
           <q-tab-panel name="alarms">
             <div class="text-h4 q-mb-md">Alarm</div>
             <div>Exam Day Counter</div>
-            <Notification />
+            <Events />
 
             <Fileuploader />
           </q-tab-panel>
 
           <q-tab-panel name="events">
             <div class="text-h4 q-mb-md">Events</div>
+            <Events />
+          </q-tab-panel>
+          <q-tab-panel name="Notifications">
             <Notification />
+          </q-tab-panel>
+          <q-tab-panel name="Assignments">
+            <div class="text-h4 q-mb-md">Settings</div>
+            <div>
+              <Assignments />
+            </div>
           </q-tab-panel>
         </q-tab-panels>
       </template>
     </q-splitter>
   </div>
   <q-footer>
-  <UpcomigSubmission/>
+    <UpcomigSubmission />
   </q-footer>
 </template>
 <script>
@@ -635,8 +650,10 @@ import { ref, watch } from "vue";
 import { mapActions, mapGetters, useStore } from 'vuex'
 import { useQuasar } from 'quasar'
 import Fileuploader from "components/Fileuploader";
-import Notification from "components/Notification";
+import Events from "components/Events";
 import UpcomigSubmission from "components/UpcomigSubmission";
+import Notification from "components/Notification";
+import Assignments from "components/Assignments";
 export default {
   setup() {
     const q = useQuasar();
@@ -736,8 +753,10 @@ export default {
   },
   components: {
     Fileuploader: Fileuploader,
+    Events: Events,
     Notification: Notification,
-    UpcomigSubmission:UpcomigSubmission
+    UpcomigSubmission: UpcomigSubmission,
+    Assignments: Assignments
   },
   mounted() {
     this.getCourses();
@@ -899,7 +918,7 @@ export default {
         const name = this.tmpEventName.split(" ").join("_")
         let Date = this.tmpEventDate.substring(0, this.tmpEventDate.indexOf(" "))
         Date = Date.split("-").join("/")
-        const Time = this.tmpEventDate.substring(this.tmpEventDate.indexOf(" ") + 1)+":00"
+        const Time = this.tmpEventDate.substring(this.tmpEventDate.indexOf(" ") + 1) + ":00"
         console.log(Date, Time, name);
         this.Addevent = false;
         this.AddSpecialEvent({

@@ -12,7 +12,7 @@ const updatecourse = (state, payload) => {
 const AddAllUsers = (state, payload) => {
   state.Allusers[payload.ID] = payload.Data;
 };
-const SetDate= (state, payload) => {
+const SetDate = (state, payload) => {
   state.Today = payload;
 };
 const UpdateAUser = (state, payload) => {
@@ -33,20 +33,26 @@ const clearuser = (state) => {
 const RemovecourseMut = (state, ID) => {
   delete state.courses[ID];
 };
-const Set_Special_Events= (state, payload) => {
+const Set_Special_Events = (state, payload) => {
   state.Special_Events[payload.EventName] = payload.EventData;
 };
-const update_Special_Events= (state, payload) => {
+const update_Special_Events = (state, payload) => {
   // state.Special_Events[payload.EventName] = payload.EventData;
-  Object.assign(state.Special_Events[payload.EventName],payload.EventData);
+  Object.assign(state.Special_Events[payload.EventName], payload.EventData);
 };
-const ClearEvents=(state)=>{
+const ClearEvents = (state) => {
   state.Special_Events = {};
-}
-const Remove_Special_Events= (state, EventName) => {
+};
+const Remove_Special_Events = (state, EventName) => {
   delete state.Special_Events[EventName];
 };
+const Add_Assignments = (state, payload) => {
+  state.Assignments[payload.AssignmentName] = payload.AssignmentData;
+  // console.log(state.Assignments);
+  // console.log(payload);
+};
 export {
+  Add_Assignments,
   userstore,
   Remove_Special_Events,
   update_Special_Events,
@@ -60,5 +66,5 @@ export {
   RemovecourseMut,
   updateusers,
   SetDate,
-  Set_Special_Events
+  Set_Special_Events,
 };

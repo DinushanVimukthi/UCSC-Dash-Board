@@ -144,6 +144,7 @@ const GetNormalEvents=(state)=>{
 //   let SpecialEvents={}
 //   return state.Special_Events
 // }
+
 const GetAllEvents=(state)=>{
   return state.Special_Events
 }
@@ -170,4 +171,8 @@ const GetUpcomingEvents=(state)=>{
   console.log(UpcomingEvents);
   return UpcomingEvents
 }
-export {GetUpcomingEvents,GetNormalEvents,GetAllEvents,GetSpecialEventsID,courses,AllcoursesID,Tcourses,UserAdmin,All_users,IsSuperAdmin,getpic,User,UserID,GetUsername,GetFullname,SecondSemExam,GetSpecialEvents}
+const Get_Assignments=(state)=>{
+  console.log(state);
+  return 'state.Assignments'
+}
+export {Get_Assignments,GetUpcomingEvents,GetNormalEvents,GetAllEvents,GetSpecialEventsID,courses,AllcoursesID,Tcourses,UserAdmin,All_users,IsSuperAdmin,getpic,User,UserID,GetUsername,GetFullname,SecondSemExam,GetSpecialEvents}
